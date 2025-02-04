@@ -1,0 +1,36 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: auto
+
+    providers:
+        in_memory:
+            memory:
+                users:
+                    admin:
+                        password: "$2y$13$SVu5xypIpWAHdY3kfWbNYuTrCAuqZC1vEem1TsNlrHqsriAqMk6h."
+                        roles: ['ROLE_ADMIN']
+                    user:
+                        password: "$2y$13$DVB/TxiBt.eT2rJQXdvxVOcoJdyuE7ogldbp0/fBZF4X19IXcA72m"
+                        roles: ['ROLE_USER']
+
+    firewalls:
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+    access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/v1/users, roles: PUBLIC_ACCESS }  # Дозволяє реєстрацію користувачів
+        - { path: ^/api/test/post, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
